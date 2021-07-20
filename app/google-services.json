@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "293490482805",
+    "project_id": "mymapandroidapp-37189",
+    "storage_bucket": "mymapandroidapp-37189.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:293490482805:android:e0cae1bf86ebf9f1fea23c",
+        "android_client_info": {
+          "package_name": "com.example.mymapandroidapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "293490482805-pmpuaa93stifksj4m78tpiqjhigs96ps.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwHu3PRm1kSDs34lTteaEM4yKegW6AyPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "293490482805-pmpuaa93stifksj4m78tpiqjhigs96ps.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
