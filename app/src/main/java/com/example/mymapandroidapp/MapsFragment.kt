@@ -20,7 +20,9 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.maps.android.ktx.awaitAnimateCamera
 import com.google.maps.android.ktx.awaitMap
+import com.google.maps.android.ktx.model.cameraPosition
 
 class MapsFragment : Fragment() {
 
@@ -68,42 +70,58 @@ class MapsFragment : Fragment() {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
 
         lifecycle.coroutineScope.launchWhenCreated {
-            googleMap = mapFragment.awaitMap().apply {
-                isTrafficEnabled = true
-                isBuildingsEnabled = true
+            setMap(mapFragment)
+            setupGeoposition()
 
-                uiSettings.apply {
-                    isZoomControlsEnabled = true
-                    setAllGesturesEnabled(true)
+            val target = LatLng(55.751999, 37.617734)
+            googleMap.awaitAnimateCamera(
+                CameraUpdateFactory.newCameraPosition(
+                    cameraPosition {
+                        target(target)
+                        zoom(15F)
+                    }
+                ))
+        }
+    }
+
+    private fun setupGeoposition() {
+        when {
+            // 1. Проверяем есть ли уже права
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                googleMap.apply {
+                    isMyLocationEnabled = true
+                    uiSettings.isMyLocationButtonEnabled = true
+                }
+
+                val fusedLocationProviderClient = LocationServices
+                    .getFusedLocationProviderClient(requireActivity())
+
+                fusedLocationProviderClient.lastLocation.addOnSuccessListener {
+                    println(it)
                 }
             }
+            // 2. Должны показать обоснование необходимости прав
+            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                // TODO: show rationale dialog
+            }
+            // 3. Запрашиваем права
+            else -> {
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+        }
+    }
 
-            when {
-                // 1. Проверяем есть ли уже права
-                ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED -> {
-                    googleMap.apply {
-                        isMyLocationEnabled = true
-                        uiSettings.isMyLocationButtonEnabled = true
-                    }
+    private suspend fun setMap(mapFragment: SupportMapFragment) {
+        googleMap = mapFragment.awaitMap().apply {
+            isTrafficEnabled = true
+            isBuildingsEnabled = true
 
-                    val fusedLocationProviderClient = LocationServices
-                        .getFusedLocationProviderClient(requireActivity())
-
-                    fusedLocationProviderClient.lastLocation.addOnSuccessListener {
-                        println(it)
-                    }
-                }
-                // 2. Должны показать обоснование необходимости прав
-                shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                    // TODO: show rationale dialog
-                }
-                // 3. Запрашиваем права
-                else -> {
-                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                }
+            uiSettings.apply {
+                isZoomControlsEnabled = true
+                setAllGesturesEnabled(true)
             }
         }
     }
