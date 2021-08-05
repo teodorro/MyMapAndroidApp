@@ -12,9 +12,11 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.coroutineScope
 import com.example.mymapandroidapp.R
 import com.example.mymapandroidapp.activity.extensions.icon
+import com.example.mymapandroidapp.viewModels.MapsViewModel
 import com.google.android.gms.location.LocationServices
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -27,10 +29,16 @@ import com.google.maps.android.collections.MarkerManager
 import com.google.maps.android.ktx.awaitAnimateCamera
 import com.google.maps.android.ktx.awaitMap
 import com.google.maps.android.ktx.model.cameraPosition
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MapsFragment : Fragment() {
 
     private lateinit var googleMap: GoogleMap
+
+    private val viewModel: MapsViewModel by viewModels(
+        ownerProducer = ::requireParentFragment,
+    )
 
     @SuppressLint("MissingPermission")
     private val requestPermissionLauncher =
@@ -123,6 +131,7 @@ class MapsFragment : Fragment() {
                 googleMap.setOnMapLongClickListener{
                     var lat = it.latitude
                     var lng = it.longitude
+
 
                 }
             }
