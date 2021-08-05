@@ -15,7 +15,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.coroutineScope
 import com.example.mymapandroidapp.R
-import com.example.mymapandroidapp.activity.extensions.icon
+import com.example.mymapandroidapp.extensions.icon
+import com.example.mymapandroidapp.model.PointModel
 import com.example.mymapandroidapp.viewModels.MapsViewModel
 import com.google.android.gms.location.LocationServices
 
@@ -37,8 +38,10 @@ class MapsFragment : Fragment() {
     private lateinit var googleMap: GoogleMap
 
     private val viewModel: MapsViewModel by viewModels(
-        ownerProducer = ::requireParentFragment,
+        //ownerProducer = ::requireParentFragment,
     )
+    private lateinit var markerManager: MarkerManager
+    private lateinit var markerCollection: MarkerManager.Collection
 
     @SuppressLint("MissingPermission")
     private val requestPermissionLauncher =
@@ -87,17 +90,18 @@ class MapsFragment : Fragment() {
 
             val target = LatLng(55.751999, 37.617734)
 
-            val markerManager = MarkerManager(googleMap)
+            markerManager = MarkerManager(googleMap)
+            markerCollection = markerManager.newCollection("markCollection")
+//
+//            var markerOptions = MarkerOptions()
+//            markerOptions.position(target)
+//            markerOptions.icon(getDrawable(requireContext(), R.drawable.ic_baseline_location_on_24)!!)
+//            markerOptions.title("kremlin")
+//
 
-            var markerOptions = MarkerOptions()
-            markerOptions.position(target)
-            markerOptions.icon(getDrawable(requireContext(), R.drawable.ic_baseline_location_on_24)!!)
-            markerOptions.title("kremlin")
-
-            var markerCollection = markerManager.newCollection("markCollection")
-
-            markerCollection.apply { addMarker(markerOptions)
-                .apply { tag = "additional data" } }
+//
+//            markerCollection.apply { addMarker(markerOptions)
+//                .apply { tag = "additional data" } }
 
             googleMap.awaitAnimateCamera(
                 CameraUpdateFactory.newCameraPosition(
@@ -128,11 +132,23 @@ class MapsFragment : Fragment() {
                     println(it)
                 }
 
-                googleMap.setOnMapLongClickListener{
-                    var lat = it.latitude
-                    var lng = it.longitude
+                googleMap.setOnMapLongClickListener {
+                    viewModel.savePoint(it, "")
 
+                    var markerOptions = MarkerOptions()
+                    markerOptions.position(it)
+                    markerOptions.icon(
+                        getDrawable(
+                            requireContext(),
+                            R.drawable.ic_baseline_location_on_24
+                        )!!
+                    )
+                    markerOptions.title("kremlin")
 
+                    markerCollection.apply {
+                        addMarker(markerOptions)
+                            .apply { tag = "additional data" }
+                    }
                 }
             }
             // 2. Должны показать обоснование необходимости прав
