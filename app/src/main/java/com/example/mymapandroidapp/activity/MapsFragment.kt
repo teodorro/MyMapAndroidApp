@@ -1,4 +1,4 @@
-package com.example.mymapandroidapp
+package com.example.mymapandroidapp.activity
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -10,8 +10,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.coroutineScope
+import com.example.mymapandroidapp.R
+import com.example.mymapandroidapp.extensions.icon
+import com.example.mymapandroidapp.model.PointModel
+import com.example.mymapandroidapp.viewModels.MapsViewModel
 import com.google.android.gms.location.LocationServices
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -20,13 +26,22 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.maps.android.collections.MarkerManager
 import com.google.maps.android.ktx.awaitAnimateCamera
 import com.google.maps.android.ktx.awaitMap
 import com.google.maps.android.ktx.model.cameraPosition
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MapsFragment : Fragment() {
 
     private lateinit var googleMap: GoogleMap
+
+    private val viewModel: MapsViewModel by viewModels(
+        //ownerProducer = ::requireParentFragment,
+    )
+    private lateinit var markerManager: MarkerManager
+    private lateinit var markerCollection: MarkerManager.Collection
 
     @SuppressLint("MissingPermission")
     private val requestPermissionLauncher =
@@ -71,9 +86,23 @@ class MapsFragment : Fragment() {
 
         lifecycle.coroutineScope.launchWhenCreated {
             setMap(mapFragment)
-            setupGeoposition()
+            setupGeoPosition()
 
             val target = LatLng(55.751999, 37.617734)
+
+            markerManager = MarkerManager(googleMap)
+            markerCollection = markerManager.newCollection("markCollection")
+//
+//            var markerOptions = MarkerOptions()
+//            markerOptions.position(target)
+//            markerOptions.icon(getDrawable(requireContext(), R.drawable.ic_baseline_location_on_24)!!)
+//            markerOptions.title("kremlin")
+//
+
+//
+//            markerCollection.apply { addMarker(markerOptions)
+//                .apply { tag = "additional data" } }
+
             googleMap.awaitAnimateCamera(
                 CameraUpdateFactory.newCameraPosition(
                     cameraPosition {
@@ -84,7 +113,7 @@ class MapsFragment : Fragment() {
         }
     }
 
-    private fun setupGeoposition() {
+    private fun setupGeoPosition() {
         when {
             // 1. Проверяем есть ли уже права
             ContextCompat.checkSelfPermission(
@@ -101,6 +130,25 @@ class MapsFragment : Fragment() {
 
                 fusedLocationProviderClient.lastLocation.addOnSuccessListener {
                     println(it)
+                }
+
+                googleMap.setOnMapLongClickListener {
+                    viewModel.savePoint(it, "")
+
+                    var markerOptions = MarkerOptions()
+                    markerOptions.position(it)
+                    markerOptions.icon(
+                        getDrawable(
+                            requireContext(),
+                            R.drawable.ic_baseline_location_on_24
+                        )!!
+                    )
+                    markerOptions.title("kremlin")
+
+                    markerCollection.apply {
+                        addMarker(markerOptions)
+                            .apply { tag = "additional data" }
+                    }
                 }
             }
             // 2. Должны показать обоснование необходимости прав
