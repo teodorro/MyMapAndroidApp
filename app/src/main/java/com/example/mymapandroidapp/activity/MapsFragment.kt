@@ -7,13 +7,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.coroutineScope
 import com.example.mymapandroidapp.R
 import com.example.mymapandroidapp.databinding.FragmentMapsBinding
+import com.example.mymapandroidapp.extensions.icon
 import com.example.mymapandroidapp.viewModels.MapsViewModel
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -26,6 +29,7 @@ import com.google.maps.android.collections.MarkerManager
 import com.google.maps.android.ktx.awaitAnimateCamera
 import com.google.maps.android.ktx.awaitMap
 import com.google.maps.android.ktx.model.cameraPosition
+import com.google.maps.android.ktx.utils.collection.addMarker
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -36,6 +40,7 @@ class MapsFragment : Fragment() {
     private val viewModel: MapsViewModel by viewModels(
         //ownerProducer = ::requireParentFragment,
     )
+
     private lateinit var markerManager: MarkerManager
     private lateinit var markerCollection: MarkerManager.Collection
 
@@ -76,26 +81,30 @@ class MapsFragment : Fragment() {
 
         viewModel.data.observe(viewLifecycleOwner) { state ->
 
-            var a = MarkerOptions().let { it.position(null)}
-            markerCollection = state.points.map { x ->
-                MarkerOptions().let {
-                    it.position(x.position) }
+            if (state != null) {
+                var points = state.points
+
+                var pointsToAdd = points.filter { x ->
+                    !markerCollection.markers.map { y -> y.position }
+                        .any { z -> z.latitude == x.latitude && z.longitude == x.longitude }
+                }
+                pointsToAdd.forEach { x ->
+                    markerCollection.addMarker {
+                        this.position(LatLng(x.latitude, x.longitude))
+                        this.title(x.title)
+                        this.icon(
+                            getDrawable(
+                                requireContext(),
+                                R.drawable.ic_baseline_location_on_24
+                            )!!
+                        )
+
+                    }
+                }
+                // TODO: delete markers
+                // TODO: update markers
+
             }
-            markerCollection.
-//            var markerOptions = MarkerOptions()
-//            markerOptions.position(it)
-//            markerOptions.icon(
-//                getDrawable(
-//                    requireContext(),
-//                    R.drawable.ic_baseline_location_on_24
-//                )!!
-//            )
-//            markerOptions.title("kremlin")
-//
-//            markerCollection.apply {
-//                addMarker(markerOptions)
-//                    .apply { tag = "additional data" }
-//            }
         }
 
 
@@ -106,7 +115,8 @@ class MapsFragment : Fragment() {
 
     override fun onViewCreated(
         view: View,
-        savedInstanceState: Bundle?) {
+        savedInstanceState: Bundle?
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -119,17 +129,12 @@ class MapsFragment : Fragment() {
 
             markerManager = MarkerManager(googleMap)
             markerCollection = markerManager.newCollection("markCollection")
-//
-//            var markerOptions = MarkerOptions()
-//            markerOptions.position(target)
-//            markerOptions.icon(getDrawable(requireContext(), R.drawable.ic_baseline_location_on_24)!!)
-//            markerOptions.title("kremlin")
-//
+            markerCollection.setOnMarkerClickListener {
+                Toast.makeText(requireContext(), R.string.app_name, Toast.LENGTH_LONG)
+                    .show()
+                return@setOnMarkerClickListener true
 
-//
-//            markerCollection.apply { addMarker(markerOptions)
-//                .apply { tag = "additional data" } }
-
+            }
             googleMap.awaitAnimateCamera(
                 CameraUpdateFactory.newCameraPosition(
                     cameraPosition {
@@ -160,10 +165,8 @@ class MapsFragment : Fragment() {
                 }
 
                 googleMap.setOnMapLongClickListener {
-//                    viewModel.savePoint(it, "")
 
                     viewModel.addPoint(it, "kremlin")
-
 
                 }
             }

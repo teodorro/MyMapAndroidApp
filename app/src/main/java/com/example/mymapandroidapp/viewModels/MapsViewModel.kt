@@ -19,7 +19,7 @@ class MapsViewModel @Inject constructor(
     val data: LiveData<FeedModel> = repository.data
         .map { points ->
             FeedModel(
-                points.map { it.copy() },
+                points,
                 points.isEmpty()
             )
         }.asLiveData()
@@ -65,7 +65,7 @@ class MapsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _dataState.value = FeedModelState(refreshing = true)
-                val point = MyPoint(nextId++, position, title)
+                val point = MyPoint(nextId++, position.latitude, position.longitude, title)
                 repository.insert(point)
                 _dataState.value = FeedModelState()
             } catch (e: Exception) {

@@ -4,7 +4,9 @@ import com.google.android.gms.maps.model.LatLng
 
 data class MyPoint(
     val id: Long,
-    val position: LatLng,
+    val latitude: Double,
+    val longitude: Double,
+//    val position: LatLng,
     val title: String
 )
 

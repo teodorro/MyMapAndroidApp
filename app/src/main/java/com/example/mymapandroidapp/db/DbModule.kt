@@ -11,7 +11,7 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-class DbModule {
+object DbModule {
     @Provides
     @Singleton
     fun provideDb(@ApplicationContext context: Context): AppDb {
