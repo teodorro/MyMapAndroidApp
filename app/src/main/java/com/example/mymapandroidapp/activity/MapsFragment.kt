@@ -3,23 +3,19 @@ package com.example.mymapandroidapp.activity
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import androidx.fragment.app.Fragment
-
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.coroutineScope
 import com.example.mymapandroidapp.R
-import com.example.mymapandroidapp.extensions.icon
-import com.example.mymapandroidapp.model.PointModel
+import com.example.mymapandroidapp.databinding.FragmentMapsBinding
 import com.example.mymapandroidapp.viewModels.MapsViewModel
 import com.google.android.gms.location.LocationServices
-
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -76,10 +72,41 @@ class MapsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_maps, container, false)
+        val binding = FragmentMapsBinding.inflate(inflater, container, false)
+
+        viewModel.data.observe(viewLifecycleOwner) { state ->
+
+            var a = MarkerOptions().let { it.position(null)}
+            markerCollection = state.points.map { x ->
+                MarkerOptions().let {
+                    it.position(x.position) }
+            }
+            markerCollection.
+//            var markerOptions = MarkerOptions()
+//            markerOptions.position(it)
+//            markerOptions.icon(
+//                getDrawable(
+//                    requireContext(),
+//                    R.drawable.ic_baseline_location_on_24
+//                )!!
+//            )
+//            markerOptions.title("kremlin")
+//
+//            markerCollection.apply {
+//                addMarker(markerOptions)
+//                    .apply { tag = "additional data" }
+//            }
+        }
+
+
+        return binding.root
+
+//        return inflater.inflate(R.layout.fragment_maps, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -133,22 +160,11 @@ class MapsFragment : Fragment() {
                 }
 
                 googleMap.setOnMapLongClickListener {
-                    viewModel.savePoint(it, "")
+//                    viewModel.savePoint(it, "")
 
-                    var markerOptions = MarkerOptions()
-                    markerOptions.position(it)
-                    markerOptions.icon(
-                        getDrawable(
-                            requireContext(),
-                            R.drawable.ic_baseline_location_on_24
-                        )!!
-                    )
-                    markerOptions.title("kremlin")
+                    viewModel.addPoint(it, "kremlin")
 
-                    markerCollection.apply {
-                        addMarker(markerOptions)
-                            .apply { tag = "additional data" }
-                    }
+
                 }
             }
             // 2. Должны показать обоснование необходимости прав
