@@ -120,6 +120,7 @@ dependencies {
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
     implementation "androidx.hilt:hilt-work:$hilt_work_version"
     implementation "androidx.paging:paging-runtime-ktx:$paging_version"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:1.1.0"
 
     implementation "com.google.android.gms:play-services-location:$location_version"
     implementation "com.google.android.gms:play-services-maps:$maps_version"
