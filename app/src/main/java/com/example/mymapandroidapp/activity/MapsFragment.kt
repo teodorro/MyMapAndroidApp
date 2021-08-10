@@ -38,7 +38,7 @@ class MapsFragment : Fragment() {
     private lateinit var googleMap: GoogleMap
 
     private val viewModel: MapsViewModel by viewModels(
-        //ownerProducer = ::requireParentFragment,
+        ownerProducer = ::requireParentFragment,
     )
 
     private lateinit var markerManager: MarkerManager
