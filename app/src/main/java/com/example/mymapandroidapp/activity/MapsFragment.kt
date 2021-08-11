@@ -17,6 +17,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.coroutineScope
 import com.example.mymapandroidapp.R
 import com.example.mymapandroidapp.databinding.FragmentMapsBinding
+import com.example.mymapandroidapp.dto.MyPoint
 import com.example.mymapandroidapp.extensions.icon
 import com.example.mymapandroidapp.viewModels.MapsViewModel
 import com.google.android.gms.location.LocationServices
@@ -25,6 +26,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.textview.MaterialTextView
@@ -49,6 +51,9 @@ class MapsFragment : Fragment() {
 
     private lateinit var bottomSheet: FrameLayout
     private lateinit var textViewMarker: MaterialTextView
+
+    private lateinit var curMarker: Marker
+    private var pointMarkerMap: MutableMap<MyPoint, Marker> = mutableMapOf()
 
     @SuppressLint("MissingPermission")
     private val requestPermissionLauncher =
@@ -92,9 +97,10 @@ class MapsFragment : Fragment() {
                 var points = state.points
 
                 var pointsToAdd = points.filter { x ->
-                    !markerCollection.markers.map { y -> y.position }
-                        .any { z -> z.latitude == x.latitude && z.longitude == x.longitude }
+                    !pointMarkerMap.keys.map { y -> y.id }.contains(x.id)
                 }
+
+                // add points
                 pointsToAdd.forEach { x ->
                     markerCollection.addMarker {
                         this.position(LatLng(x.latitude, x.longitude))
@@ -105,11 +111,24 @@ class MapsFragment : Fragment() {
                                 R.drawable.ic_baseline_location_on_24
                             )!!
                         )
-
                     }
+                        .also {
+                            pointMarkerMap.put(x, it)
+                        }
                 }
-                // TODO: delete markers
-                // TODO: update markers
+
+                // delete points
+                var pointsToDelete = pointMarkerMap.keys.filter { x ->
+                    !points.map { y -> y.id }.contains(x.id)
+                }
+                pointsToDelete.forEach { x ->
+                    markerCollection.remove(pointMarkerMap[x])
+                        .also {
+                            pointMarkerMap.remove(x)
+                        }
+                }
+
+                // TODO: update points
 
             }
         }
@@ -117,6 +136,11 @@ class MapsFragment : Fragment() {
         BottomSheetBehavior.from(binding.bottomSheet).apply {
             peekHeight = 0
             this.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
+        binding.buttonDelete.setOnClickListener {
+            var point = pointMarkerMap.filter { x -> x.value == curMarker }.keys.first()
+            viewModel.deletePoint(point.id)
         }
 
         bottomSheet = binding.bottomSheet
@@ -145,6 +169,7 @@ class MapsFragment : Fragment() {
                 BottomSheetBehavior.from(bottomSheet).state =
                     BottomSheetBehavior.STATE_EXPANDED
                 textViewMarker.text = it.title
+                curMarker = it
                 return@setOnMarkerClickListener true
             }
 
@@ -207,4 +232,5 @@ class MapsFragment : Fragment() {
             }
         }
     }
+
 }
