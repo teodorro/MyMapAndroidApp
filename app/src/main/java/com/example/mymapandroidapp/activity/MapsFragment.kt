@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.content.ContextCompat
@@ -26,6 +27,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.textview.MaterialTextView
 import com.google.maps.android.collections.MarkerManager
 import com.google.maps.android.ktx.awaitAnimateCamera
 import com.google.maps.android.ktx.awaitMap
@@ -46,6 +48,7 @@ class MapsFragment : Fragment() {
     private lateinit var markerCollection: MarkerManager.Collection
 
     private lateinit var bottomSheet: FrameLayout
+    private lateinit var textViewMarker: MaterialTextView
 
     @SuppressLint("MissingPermission")
     private val requestPermissionLauncher =
@@ -75,19 +78,13 @@ class MapsFragment : Fragment() {
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
     }
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val binding = FragmentMapsBinding.inflate(inflater, container, false)
-
-//        markerManager = MarkerManager(googleMap)
-//        markerCollection = markerManager.newCollection("markCollection")
-//        markerCollection.setOnMarkerClickListener {
-//            BottomSheetBehavior.from(binding.bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
-//            return@setOnMarkerClickListener true
-//        }
 
         viewModel.data.observe(viewLifecycleOwner) { state ->
 
@@ -118,12 +115,12 @@ class MapsFragment : Fragment() {
         }
 
         BottomSheetBehavior.from(binding.bottomSheet).apply {
-            peekHeight = 150
+            peekHeight = 0
             this.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
         bottomSheet = binding.bottomSheet
-
+        textViewMarker = binding.textViewMarker
 
         return binding.root
 
@@ -142,21 +139,16 @@ class MapsFragment : Fragment() {
             setMap(mapFragment)
             setupGeoPosition()
 
-            val target = LatLng(55.751999, 37.617734)
-
             markerManager = MarkerManager(googleMap)
             markerCollection = markerManager.newCollection("markCollection")
             markerCollection.setOnMarkerClickListener {
-//                Toast.makeText(requireContext(), R.string.app_name, Toast.LENGTH_LONG)
-//                    .show()
-                markerCollection.setOnMarkerClickListener {
-                    BottomSheetBehavior.from(bottomSheet).state =
-                        BottomSheetBehavior.STATE_EXPANDED
-                    return@setOnMarkerClickListener true
-                }
+                BottomSheetBehavior.from(bottomSheet).state =
+                    BottomSheetBehavior.STATE_EXPANDED
+                textViewMarker.text = it.title
                 return@setOnMarkerClickListener true
-
             }
+
+            val target = LatLng(55.751999, 37.617734)
             googleMap.awaitAnimateCamera(
                 CameraUpdateFactory.newCameraPosition(
                     cameraPosition {
@@ -166,7 +158,6 @@ class MapsFragment : Fragment() {
                 ))
         }
 
-//        BottomSheetBehavior.from(bottomSheet)
     }
 
     private fun setupGeoPosition() {

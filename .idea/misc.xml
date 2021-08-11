@@ -3,6 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/_repo/Android/MyMapAndroidApp/app/src/main/res/drawable/ic_baseline_remove_24.xml" value="0.221875" />
+        <entry key="..\:/_repo/Android/MyMapAndroidApp/app/src/main/res/layout/activity_main.xml" value="0.36614583333333334" />
+        <entry key="..\:/_repo/Android/MyMapAndroidApp/app/src/main/res/layout/fragment_backdrop.xml" value="0.36666666666666664" />
+        <entry key="..\:/_repo/Android/MyMapAndroidApp/app/src/main/res/layout/fragment_maps.xml" value="0.2667572463768116" />
         <entry key="..\:/git_repos/Kotlin/Android/MyMapAndroidApp/app/src/main/res/drawable/ic_baseline_location_on_24.xml" value="0.22135416666666666" />
         <entry key="..\:/git_repos/Kotlin/Android/MyMapAndroidApp/app/src/main/res/layout/fragment_maps.xml" value="0.16847826086956522" />
       </map>
