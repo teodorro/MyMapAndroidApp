@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,6 +21,7 @@ import com.example.mymapandroidapp.R
 import com.example.mymapandroidapp.databinding.FragmentMapsBinding
 import com.example.mymapandroidapp.dto.MyPoint
 import com.example.mymapandroidapp.extensions.icon
+import com.example.mymapandroidapp.utils.AndroidUtils
 import com.example.mymapandroidapp.viewModels.MapsViewModel
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -51,6 +54,7 @@ class MapsFragment : Fragment() {
 
     private lateinit var bottomSheet: FrameLayout
     private lateinit var textViewMarker: MaterialTextView
+    private lateinit var editTextTitle: EditText
 
     private lateinit var curMarker: Marker
     private var pointMarkerMap: MutableMap<MyPoint, Marker> = mutableMapOf()
@@ -145,6 +149,7 @@ class MapsFragment : Fragment() {
 
         bottomSheet = binding.bottomSheet
         textViewMarker = binding.textViewMarker
+        editTextTitle = binding.editTextTitle
 
         return binding.root
 
@@ -206,7 +211,11 @@ class MapsFragment : Fragment() {
 
                 googleMap.setOnMapLongClickListener {
 
-                    viewModel.addPoint(it, "kremlin")
+                    editTextTitle.visibility = View.VISIBLE
+                    editTextTitle.requestFocus()
+                    AndroidUtils.showKeyboard(editTextTitle, InputMethodManager.SHOW_IMPLICIT)
+
+                    //viewModel.addPoint(it, "kremlin")
 
                 }
             }

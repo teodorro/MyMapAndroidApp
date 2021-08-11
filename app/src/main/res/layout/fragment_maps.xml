@@ -66,4 +66,12 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
+    <EditText
+        android:id="@+id/editTextTitle"
+        android:text="editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:visibility="invisible"
+        android:background="@color/white"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

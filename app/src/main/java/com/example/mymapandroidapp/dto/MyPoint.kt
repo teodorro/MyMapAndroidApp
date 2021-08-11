@@ -6,7 +6,6 @@ data class MyPoint(
     val id: Long,
     val latitude: Double,
     val longitude: Double,
-//    val position: LatLng,
     val title: String
 )
 
