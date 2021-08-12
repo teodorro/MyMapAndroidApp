@@ -61,4 +61,13 @@ class MyPointRepositoryImpl @Inject constructor(
             throw AppError.from(e)
         }
     }
+
+    override suspend fun getMaxId(): Long{
+        try {
+            var maxId = myPointDao.getMaxId()
+            return maxId
+        } catch (e: Exception) {
+            throw AppError.from(e)
+        }
+    }
 }

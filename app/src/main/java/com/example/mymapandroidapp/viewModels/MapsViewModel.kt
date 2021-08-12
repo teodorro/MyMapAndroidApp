@@ -24,7 +24,6 @@ class MapsViewModel @Inject constructor(
             )
         }.asLiveData()
 
-//    private val points: MutableList<MyPoint> = emptyList<MyPoint>().toMutableList()
 
     private val _dataState = MutableLiveData<FeedModelState>()
     val dataState: LiveData<FeedModelState>
@@ -34,17 +33,14 @@ class MapsViewModel @Inject constructor(
 
     init {
         loadPoints()
-        if (data.value != null) {
-            var curId = (data.value as FeedModel).points.map { x -> x.id }.maxOrNull()
-            if (curId != null)
-                nextId = curId++
-        }
     }
 
     fun loadPoints() = viewModelScope.launch {
         try {
             _dataState.value = FeedModelState(loading = true)
             repository.getAll()
+            var maxId = repository.getMaxId()
+            nextId = ++maxId
             _dataState.value = FeedModelState()
         } catch (e: Exception) {
             _dataState.value = FeedModelState(error = true)

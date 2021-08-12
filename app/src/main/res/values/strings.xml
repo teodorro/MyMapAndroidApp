@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">MyMapAndroidApp</string>
-    <string name="delete_marker">Delete marker</string>
+    <string name="delete_title">Delete title</string>
+    <string name="edit_title">Edit title</string>
+    <string name="title">Title:</string>
 </resources>

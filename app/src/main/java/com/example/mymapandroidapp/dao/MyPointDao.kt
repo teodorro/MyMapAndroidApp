@@ -15,6 +15,9 @@ interface MyPointDao {
     @Query("SELECT * FROM MyPointEntity WHERE id = :id")
     suspend fun getById(id: Long): MyPointEntity
 
+    @Query("SELECT MAX(id) FROM MyPointEntity")
+    suspend fun getMaxId(): Long
+
     @Query("SELECT COUNT(*) == 0 FROM MyPointEntity")
     suspend fun isEmpty(): Boolean
 

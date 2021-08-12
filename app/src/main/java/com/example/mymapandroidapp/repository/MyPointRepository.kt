@@ -7,6 +7,7 @@ interface MyPointRepository {
     val data: Flow<List<MyPoint>>
     suspend fun getAll()
     suspend fun getById(id: Long)
+    suspend fun getMaxId(): Long
     suspend fun insert(point: MyPoint)
     suspend fun delete(id: Long)
     suspend fun update(id: Long, title: String)

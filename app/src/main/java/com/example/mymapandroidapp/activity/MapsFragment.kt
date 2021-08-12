@@ -100,6 +100,7 @@ class MapsFragment : Fragment() {
 
             if (state != null) {
                 var points = state.points
+                var points2 = pointMarkerMap.keys
 
                 var pointsToAdd = points.filter { x ->
                     !pointMarkerMap.keys.map { y -> y.id }.contains(x.id)
@@ -152,6 +153,7 @@ class MapsFragment : Fragment() {
             }
         }
 
+        // print title
         binding.editTextTitle.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 AndroidUtils.hideKeyboard(editTextTitle)
@@ -189,6 +191,7 @@ class MapsFragment : Fragment() {
 
             markerManager = MarkerManager(googleMap)
             markerCollection = markerManager.newCollection("markCollection")
+            // show bottomsheet
             markerCollection.setOnMarkerClickListener {
                 BottomSheetBehavior.from(bottomSheet).state =
                     BottomSheetBehavior.STATE_EXPANDED
