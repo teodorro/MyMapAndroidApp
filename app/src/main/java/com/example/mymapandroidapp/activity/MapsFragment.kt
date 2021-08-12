@@ -4,13 +4,13 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
-import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.content.ContextCompat
@@ -56,7 +56,8 @@ class MapsFragment : Fragment() {
     private lateinit var textViewMarker: MaterialTextView
     private lateinit var editTextTitle: EditText
 
-    private lateinit var curMarker: Marker
+    private lateinit var selectedMarker: Marker
+    private var selectedPosition: LatLng? = null
     private var pointMarkerMap: MutableMap<MyPoint, Marker> = mutableMapOf()
 
     @SuppressLint("MissingPermission")
@@ -143,9 +144,27 @@ class MapsFragment : Fragment() {
         }
 
         binding.buttonDelete.setOnClickListener {
-            var point = pointMarkerMap.filter { x -> x.value == curMarker }.keys.first()
+            var point = pointMarkerMap.filter { x -> x.value == selectedMarker }.keys.first()
             viewModel.deletePoint(point.id)
+            BottomSheetBehavior.from(binding.bottomSheet).apply {
+                peekHeight = 0
+                this.state = BottomSheetBehavior.STATE_COLLAPSED
+            }
         }
+
+        binding.editTextTitle.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                AndroidUtils.hideKeyboard(editTextTitle)
+                var txt = editTextTitle.text.toString()
+                if (txt.isNotBlank())
+                    viewModel.addPoint(selectedPosition!!, txt)
+                selectedPosition = null
+                editTextTitle.visibility = View.INVISIBLE
+                editTextTitle.text.clear()
+                return@OnKeyListener true
+            }
+            false
+        })
 
         bottomSheet = binding.bottomSheet
         textViewMarker = binding.textViewMarker
@@ -174,7 +193,7 @@ class MapsFragment : Fragment() {
                 BottomSheetBehavior.from(bottomSheet).state =
                     BottomSheetBehavior.STATE_EXPANDED
                 textViewMarker.text = it.title
-                curMarker = it
+                selectedMarker = it
                 return@setOnMarkerClickListener true
             }
 
@@ -210,13 +229,20 @@ class MapsFragment : Fragment() {
                 }
 
                 googleMap.setOnMapLongClickListener {
-
+                    selectedPosition = it
                     editTextTitle.visibility = View.VISIBLE
                     editTextTitle.requestFocus()
                     AndroidUtils.showKeyboard(editTextTitle, InputMethodManager.SHOW_IMPLICIT)
+                }
 
-                    //viewModel.addPoint(it, "kremlin")
-
+                googleMap.setOnMapClickListener {
+                    editTextTitle.visibility = View.INVISIBLE
+                    editTextTitle.text.clear()
+                    AndroidUtils.hideKeyboard(requireView())
+                    BottomSheetBehavior.from(bottomSheet).apply {
+                        peekHeight = 0
+                        this.state = BottomSheetBehavior.STATE_COLLAPSED
+                    }
                 }
             }
             // 2. Должны показать обоснование необходимости прав
