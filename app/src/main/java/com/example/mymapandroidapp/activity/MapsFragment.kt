@@ -13,6 +13,7 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -55,8 +56,9 @@ class MapsFragment : Fragment() {
     private lateinit var bottomSheet: FrameLayout
     private lateinit var textViewMarker: MaterialTextView
     private lateinit var editTextTitle: EditText
+    private lateinit var layoutAddPoint: ConstraintLayout
 
-    private lateinit var selectedMarker: Marker
+    private var selectedMarker: Marker? = null
     private var selectedPosition: LatLng? = null
     private var pointMarkerMap: MutableMap<MyPoint, Marker> = mutableMapOf()
 
@@ -119,7 +121,7 @@ class MapsFragment : Fragment() {
                         )
                     }
                         .also {
-                            pointMarkerMap.put(x, it)
+                            pointMarkerMap[x] = it
                         }
                 }
 
@@ -134,8 +136,19 @@ class MapsFragment : Fragment() {
                         }
                 }
 
-                // TODO: update points
+                // update points
+                points.forEach { p ->
+                    var oldPoint = pointMarkerMap.keys.first { x -> x.id == p.id }
+                    if (oldPoint != p) {
+                        var marker = pointMarkerMap[oldPoint]
+                        marker!!.title = p.title
+                        pointMarkerMap[p] = marker!!
+                        pointMarkerMap.remove(oldPoint)
+                    }
+                }
 
+                if (selectedMarker != null)
+                    showBottomSheet(selectedMarker!!)
             }
         }
 
@@ -144,25 +157,43 @@ class MapsFragment : Fragment() {
             this.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
+        // button delete
         binding.buttonDelete.setOnClickListener {
             var point = pointMarkerMap.filter { x -> x.value == selectedMarker }.keys.first()
             viewModel.deletePoint(point.id)
-            BottomSheetBehavior.from(binding.bottomSheet).apply {
-                peekHeight = 0
-                this.state = BottomSheetBehavior.STATE_COLLAPSED
-            }
+            hideBottomSheet()
+        }
+
+        // button edit
+        binding.buttonEdit.setOnClickListener {
+            hideBottomSheet()
+            showEditText()
+            selectedPosition = selectedMarker!!.position
+            editTextTitle.setText(selectedMarker!!.title)
         }
 
         // print title
         binding.editTextTitle.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
-                AndroidUtils.hideKeyboard(editTextTitle)
+            if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                var sm = selectedMarker
+                var a1 = pointMarkerMap.keys
                 var txt = editTextTitle.text.toString()
-                if (txt.isNotBlank())
-                    viewModel.addPoint(selectedPosition!!, txt)
+                if (txt.isNotBlank()) {
+                    if (selectedMarker != null) {
+                        viewModel.updatePoint(
+                            pointMarkerMap.keys.first { x -> pointMarkerMap[x] == selectedMarker }.id,
+                            txt
+                        )
+                    } else
+                        viewModel.addPoint(selectedPosition!!, txt)
+                } else {
+                    if (selectedMarker != null) {
+                        viewModel.deletePoint(pointMarkerMap.keys.first { x -> pointMarkerMap[x] == selectedMarker }.id)
+                        selectedMarker = null
+                    }
+                }
+                hideEditText()
                 selectedPosition = null
-                editTextTitle.visibility = View.INVISIBLE
-                editTextTitle.text.clear()
                 return@OnKeyListener true
             }
             false
@@ -171,6 +202,7 @@ class MapsFragment : Fragment() {
         bottomSheet = binding.bottomSheet
         textViewMarker = binding.textViewMarker
         editTextTitle = binding.editTextTitle
+        layoutAddPoint = binding.layoutAddPoint
 
         return binding.root
 
@@ -193,9 +225,7 @@ class MapsFragment : Fragment() {
             markerCollection = markerManager.newCollection("markCollection")
             // show bottomsheet
             markerCollection.setOnMarkerClickListener {
-                BottomSheetBehavior.from(bottomSheet).state =
-                    BottomSheetBehavior.STATE_EXPANDED
-                textViewMarker.text = it.title
+                showBottomSheet(it)
                 selectedMarker = it
                 return@setOnMarkerClickListener true
             }
@@ -231,21 +261,17 @@ class MapsFragment : Fragment() {
                     println(it)
                 }
 
+                // map longClick
                 googleMap.setOnMapLongClickListener {
                     selectedPosition = it
-                    editTextTitle.visibility = View.VISIBLE
-                    editTextTitle.requestFocus()
-                    AndroidUtils.showKeyboard(editTextTitle, InputMethodManager.SHOW_IMPLICIT)
+                    showEditText()
                 }
 
+                // map click
                 googleMap.setOnMapClickListener {
-                    editTextTitle.visibility = View.INVISIBLE
-                    editTextTitle.text.clear()
-                    AndroidUtils.hideKeyboard(requireView())
-                    BottomSheetBehavior.from(bottomSheet).apply {
-                        peekHeight = 0
-                        this.state = BottomSheetBehavior.STATE_COLLAPSED
-                    }
+                    selectedMarker = null
+                    hideEditText()
+                    hideBottomSheet()
                 }
             }
             // 2. Должны показать обоснование необходимости прав
@@ -271,4 +297,28 @@ class MapsFragment : Fragment() {
         }
     }
 
+    private fun showBottomSheet(marker: Marker) {
+        BottomSheetBehavior.from(bottomSheet).state =
+            BottomSheetBehavior.STATE_EXPANDED
+        textViewMarker.text = marker.title
+    }
+
+    private fun hideBottomSheet() {
+        BottomSheetBehavior.from(bottomSheet).apply {
+            peekHeight = 0
+            this.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+    }
+
+    private fun showEditText() {
+        layoutAddPoint.visibility = View.VISIBLE
+        editTextTitle.requestFocus()
+        AndroidUtils.showKeyboard(editTextTitle, InputMethodManager.SHOW_IMPLICIT)
+    }
+
+    private fun hideEditText() {
+        layoutAddPoint.visibility = View.INVISIBLE
+        editTextTitle.text.clear()
+        AndroidUtils.hideKeyboard(requireView())
+    }
 }

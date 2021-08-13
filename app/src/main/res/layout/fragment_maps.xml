@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".activity.MapsFragment">
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
     <FrameLayout
         android:id="@+id/bottomSheet"
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_sheet_height"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        android:background="@color/white"
         android:clickable="true"
-        android:background="@color/white">
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -26,13 +28,13 @@
                 android:id="@+id/bottomSheetHandle"
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_remove_24"
-                android:scaleType="centerCrop"
                 android:layout_gravity="center|top"
-                app:layout_constraintTop_toTopOf="parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_baseline_remove_24"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                />
+                app:layout_constraintTop_toTopOf="parent" />
+
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textViewTitle"
                 android:layout_width="0dp"
@@ -43,6 +45,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toLeftOf="@+id/buttonDelete"
                 app:layout_constraintTop_toBottomOf="@+id/bottomSheetHandle" />
+
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textViewMarker"
                 android:layout_width="0dp"
@@ -50,6 +53,7 @@
                 android:paddingLeft="@dimen/common_spacing"
                 android:paddingRight="@dimen/common_spacing"
                 android:text="TextView"
+                android:textColor="@color/black"
                 android:textSize="16sp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toLeftOf="@+id/buttonEdit"
@@ -61,31 +65,55 @@
                 style="@style/Widget.AppTheme.IconButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/delete_point"
                 app:icon="@drawable/ic_baseline_delete_24"
-                android:contentDescription="@string/delete_title"
-                app:layout_constraintTop_toTopOf="@+id/textViewMarker"
                 app:layout_constraintBottom_toBottomOf="@+id/textViewMarker"
-                app:layout_constraintRight_toRightOf="parent"/>
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textViewMarker" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonEdit"
                 style="@style/Widget.AppTheme.IconButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:icon="@drawable/ic_baseline_edit_24"
                 android:contentDescription="@string/edit_title"
-                app:layout_constraintTop_toTopOf="@+id/textViewMarker"
+                app:icon="@drawable/ic_baseline_edit_24"
                 app:layout_constraintBottom_toBottomOf="@+id/textViewMarker"
+                app:layout_constraintLeft_toRightOf="@+id/textViewMarker"
                 app:layout_constraintRight_toLeftOf="@+id/buttonDelete"
-                app:layout_constraintLeft_toRightOf="@+id/textViewMarker"/>
+                app:layout_constraintTop_toTopOf="@+id/textViewMarker" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
-    <EditText
-        android:id="@+id/editTextTitle"
-        android:text=""
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutAddPoint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:visibility="invisible"
-        android:background="@color/white"/>
+        android:background="@color/white"
+        android:visibility="invisible">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textViewEnterTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/common_spacing"
+            android:text="@string/enter_title"
+            android:textSize="10sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/editTextTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@color/white"
+            android:paddingLeft="@dimen/common_spacing"
+            android:paddingRight="@dimen/common_spacing"
+            android:paddingBottom="8dp"
+            android:text=""
+            app:layout_constraintTop_toBottomOf="@+id/textViewEnterTitle" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

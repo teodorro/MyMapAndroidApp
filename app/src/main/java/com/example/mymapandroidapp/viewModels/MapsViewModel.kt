@@ -47,16 +47,6 @@ class MapsViewModel @Inject constructor(
         }
     }
 
-    fun refreshPoints() = viewModelScope.launch {
-        try {
-            _dataState.value = FeedModelState(refreshing = true)
-            repository.getAll()
-            _dataState.value = FeedModelState()
-        } catch (e: Exception) {
-            _dataState.value = FeedModelState(error = true)
-        }
-    }
-
     fun addPoint(position: LatLng, title: String) {
         viewModelScope.launch {
             try {
@@ -93,14 +83,4 @@ class MapsViewModel @Inject constructor(
             }
         }
     }
-
-
-    fun getName1(): String {
-        return "point #$nextId";
-    }
-//
-//    fun savePoint(position: LatLng, title: String = "") {
-//        var t = if (title == "") getName1() else title
-//        points.add(MyPoint(position, t))
-//    }
 }
