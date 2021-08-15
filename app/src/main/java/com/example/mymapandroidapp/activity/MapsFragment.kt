@@ -116,7 +116,7 @@ class MapsFragment : Fragment() {
                         this.icon(
                             getDrawable(
                                 requireContext(),
-                                R.drawable.ic_baseline_location_on_24
+                                R.drawable.ic_baseline_location_on_32
                             )!!
                         )
                     }
@@ -173,6 +173,11 @@ class MapsFragment : Fragment() {
         }
 
         // print title
+        binding.editTextTitle.setOnEditorActionListener { v, actionId, event ->
+            var sm = selectedMarker
+            var a1 = pointMarkerMap.keys
+            return@setOnEditorActionListener true
+        }
         binding.editTextTitle.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER) {
                 var sm = selectedMarker

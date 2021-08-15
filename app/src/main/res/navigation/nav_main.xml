@@ -9,5 +9,13 @@
         android:id="@+id/mapsFragment"
         android:name="com.example.mymapandroidapp.activity.MapsFragment"
         android:label="fragment_maps"
-        tools:layout="@layout/fragment_maps" />
+        tools:layout="@layout/fragment_maps" >
+        <action
+            android:id="@+id/action_mapsFragment_to_allPointsFragment"
+            app:destination="@id/allPointsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/allPointsFragment"
+        android:name="com.example.mymapandroidapp.activity.AllPointsFragment"
+        android:label="AllPointsFragment" />
 </navigation>
