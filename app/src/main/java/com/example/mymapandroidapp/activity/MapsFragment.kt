@@ -20,7 +20,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.coroutineScope
 import com.example.mymapandroidapp.R
 import com.example.mymapandroidapp.databinding.FragmentMapsBinding
-import com.example.mymapandroidapp.dto.MyPoint
+import com.example.mymapandroidapp.dto.MyPointMarker
 import com.example.mymapandroidapp.extensions.icon
 import com.example.mymapandroidapp.utils.AndroidUtils
 import com.example.mymapandroidapp.viewModels.MapsViewModel
@@ -40,6 +40,7 @@ import com.google.maps.android.ktx.awaitMap
 import com.google.maps.android.ktx.model.cameraPosition
 import com.google.maps.android.ktx.utils.collection.addMarker
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MapsFragment : Fragment() {
@@ -60,7 +61,7 @@ class MapsFragment : Fragment() {
 
     private var selectedMarker: Marker? = null
     private var selectedPosition: LatLng? = null
-    private var pointMarkerMap: MutableMap<MyPoint, Marker> = mutableMapOf()
+    private var pointMarkerMap: MutableList<MyPointMarker> = mutableListOf()
 
     @SuppressLint("MissingPermission")
     private val requestPermissionLauncher =
@@ -102,10 +103,10 @@ class MapsFragment : Fragment() {
 
             if (state != null) {
                 var points = state.points
-                var points2 = pointMarkerMap.keys
+//                var points2 = pointMarkerMap.keys
 
                 var pointsToAdd = points.filter { x ->
-                    !pointMarkerMap.keys.map { y -> y.id }.contains(x.id)
+                    !pointMarkerMap.map { y -> y.point.id }.contains(x.id)
                 }
 
                 // add points
@@ -121,16 +122,16 @@ class MapsFragment : Fragment() {
                         )
                     }
                         .also {
-                            pointMarkerMap[x] = it
+                            pointMarkerMap.add(MyPointMarker(x, it))
                         }
                 }
 
                 // delete points
-                var pointsToDelete = pointMarkerMap.keys.filter { x ->
-                    !points.map { y -> y.id }.contains(x.id)
+                var pointsToDelete = pointMarkerMap.filter { x ->
+                    !points.map { y -> y.id }.contains(x.point.id)
                 }
                 pointsToDelete.forEach { x ->
-                    markerCollection.remove(pointMarkerMap[x])
+                    markerCollection.remove(pointMarkerMap.first { y -> y == x }.marker)
                         .also {
                             pointMarkerMap.remove(x)
                         }
@@ -138,15 +139,17 @@ class MapsFragment : Fragment() {
 
                 // update points
                 points.forEach { p ->
-                    var oldPoint = pointMarkerMap.keys.first { x -> x.id == p.id }
-                    if (oldPoint != p) {
-                        var marker = pointMarkerMap[oldPoint]
-                        marker!!.title = p.title
-                        pointMarkerMap[p] = marker!!
-                        pointMarkerMap.remove(oldPoint)
+                    var oldPointMarker = pointMarkerMap.first { x -> x.point.id == p.id }
+                    if (oldPointMarker.point != p) {
+                        oldPointMarker.marker.title = p.title
+                        pointMarkerMap.add(MyPointMarker(p, oldPointMarker.marker))
+                        pointMarkerMap.remove(oldPointMarker)
                     }
                 }
 
+                if ((viewModel.selectedPoint != null && selectedMarker == null)
+                    || (viewModel.selectedPoint != null && pointMarkerMap.first { x -> x.marker == selectedMarker}.point != viewModel.selectedPoint))
+                    selectPoint(pointMarkerMap.first { x -> x.point == viewModel.selectedPoint }.marker)
                 if (selectedMarker != null)
                     showBottomSheet(selectedMarker!!)
             }
@@ -159,7 +162,7 @@ class MapsFragment : Fragment() {
 
         // button delete
         binding.buttonDelete.setOnClickListener {
-            var point = pointMarkerMap.filter { x -> x.value == selectedMarker }.keys.first()
+            var point = pointMarkerMap.first { x -> x.marker == selectedMarker }.point
             viewModel.deletePoint(point.id)
             hideBottomSheet()
         }
@@ -173,28 +176,29 @@ class MapsFragment : Fragment() {
         }
 
         // print title
-        binding.editTextTitle.setOnEditorActionListener { v, actionId, event ->
-            var sm = selectedMarker
-            var a1 = pointMarkerMap.keys
-            return@setOnEditorActionListener true
-        }
+//        binding.editTextTitle.setOnEditorActionListener { v, actionId, event ->
+//            var sm = selectedMarker
+//            var a1 = pointMarkerMap.keys
+//            return@setOnEditorActionListener true
+//        }
+
         binding.editTextTitle.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                var sm = selectedMarker
-                var a1 = pointMarkerMap.keys
+//                var sm = selectedMarker
+//                var a1 = pointMarkerMap.keys
                 var txt = editTextTitle.text.toString()
                 if (txt.isNotBlank()) {
                     if (selectedMarker != null) {
                         viewModel.updatePoint(
-                            pointMarkerMap.keys.first { x -> pointMarkerMap[x] == selectedMarker }.id,
+                            pointMarkerMap.first { x -> x.marker == selectedMarker }.point.id,
                             txt
                         )
                     } else
                         viewModel.addPoint(selectedPosition!!, txt)
                 } else {
                     if (selectedMarker != null) {
-                        viewModel.deletePoint(pointMarkerMap.keys.first { x -> pointMarkerMap[x] == selectedMarker }.id)
-                        selectedMarker = null
+                        viewModel.deletePoint(pointMarkerMap.first { x -> x.marker == selectedMarker }.point.id)
+                        selectPoint(null)
                     }
                 }
                 hideEditText()
@@ -231,20 +235,18 @@ class MapsFragment : Fragment() {
             // show bottomsheet
             markerCollection.setOnMarkerClickListener {
                 showBottomSheet(it)
-                selectedMarker = it
+                selectPoint(it)
                 return@setOnMarkerClickListener true
             }
 
-            val target = LatLng(55.751999, 37.617734)
-            googleMap.awaitAnimateCamera(
-                CameraUpdateFactory.newCameraPosition(
-                    cameraPosition {
-                        target(target)
-                        zoom(15F)
-                    }
-                ))
+            if (viewModel.selectedPoint != null)
+                selectPoint(pointMarkerMap.first { x -> x.point == viewModel.selectedPoint }.marker)
+            else if (pointMarkerMap.any())
+                selectPoint(pointMarkerMap.first().marker)
+            else {
+                moveCamera(55.751999, 37.617734)
+            }
         }
-
     }
 
     private fun setupGeoPosition() {
@@ -274,7 +276,7 @@ class MapsFragment : Fragment() {
 
                 // map click
                 googleMap.setOnMapClickListener {
-                    selectedMarker = null
+                    selectPoint(null)
                     hideEditText()
                     hideBottomSheet()
                 }
@@ -325,5 +327,29 @@ class MapsFragment : Fragment() {
         layoutAddPoint.visibility = View.INVISIBLE
         editTextTitle.text.clear()
         AndroidUtils.hideKeyboard(requireView())
+    }
+
+    private fun selectPoint(marker: Marker?){
+        selectedMarker = marker
+        if (marker != null) {
+            viewModel.selectedPoint = pointMarkerMap.first { x -> x.marker == selectedMarker }.point
+            val point = viewModel.selectedPoint!!
+            lifecycle.coroutineScope.launch {
+                moveCamera(point.latitude, point.longitude)
+            }
+        }
+        else
+            viewModel.selectedPoint = null
+    }
+
+    private suspend fun moveCamera(latitude: Double, longitude: Double) {
+        val target = LatLng(latitude, longitude)
+        googleMap.awaitAnimateCamera(
+            CameraUpdateFactory.newCameraPosition(
+                cameraPosition {
+                    target(target)
+                    zoom(15F)
+                }
+            ))
     }
 }

@@ -21,6 +21,10 @@ class MyPointViewHolder(
         binding.apply {
             location.text = point.latitude.toString() + " " + point.longitude.toString()
             title.text = point.title
+
+            binding.location.setOnClickListener{
+                onInteractionListener.onSelect(point)
+            }
         }
     }
 }

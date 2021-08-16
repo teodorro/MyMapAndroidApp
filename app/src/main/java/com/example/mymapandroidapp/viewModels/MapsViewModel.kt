@@ -29,6 +29,8 @@ class MapsViewModel @Inject constructor(
     val dataState: LiveData<FeedModelState>
         get() = _dataState
 
+    var selectedPoint: MyPoint? = null
+
     private var nextId: Long = 1;
 
     init {
@@ -53,6 +55,7 @@ class MapsViewModel @Inject constructor(
                 _dataState.value = FeedModelState(refreshing = true)
                 val point = MyPoint(nextId++, position.latitude, position.longitude, title)
                 repository.insert(point)
+                selectedPoint = point
                 _dataState.value = FeedModelState()
             } catch (e: Exception) {
                 _dataState.value = FeedModelState(error = true)

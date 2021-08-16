@@ -6,11 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import com.example.mymapandroidapp.R
 import com.example.mymapandroidapp.adapter.MyPointItemRecyclerViewAdapter
 import com.example.mymapandroidapp.adapter.OnInteractionListener
 import com.example.mymapandroidapp.databinding.FragmentAllPointsListBinding
 import com.example.mymapandroidapp.dto.MyPoint
 import com.example.mymapandroidapp.viewModels.MapsViewModel
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.ktx.awaitAnimateCamera
+import com.google.maps.android.ktx.model.cameraPosition
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -35,12 +42,13 @@ class AllPointsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        //val view = inflater.inflate(R.layout.fragment_all_points_list, container, false)
         val binding = FragmentAllPointsListBinding.inflate(inflater, container, false)
 
         val adapter = MyPointItemRecyclerViewAdapter(object : OnInteractionListener{
             override fun onSelect(point: MyPoint) {
-                super.onSelect(point)
+
+                viewModel.selectedPoint = point
+                activity?.onBackPressed()
             }
 
             override fun onDelete(point: MyPoint) {
