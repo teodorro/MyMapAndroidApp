@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.example.mymapandroidapp.adapter.MyPointItemRecyclerViewAdapter
 import com.example.mymapandroidapp.adapter.OnInteractionListener
 import com.example.mymapandroidapp.databinding.FragmentAllPointsListBinding
@@ -35,12 +36,13 @@ class AllPointsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        //val view = inflater.inflate(R.layout.fragment_all_points_list, container, false)
         val binding = FragmentAllPointsListBinding.inflate(inflater, container, false)
 
         val adapter = MyPointItemRecyclerViewAdapter(object : OnInteractionListener{
             override fun onSelect(point: MyPoint) {
-                super.onSelect(point)
+
+                viewModel.selectedPoint = point
+                findNavController().navigateUp()
             }
 
             override fun onDelete(point: MyPoint) {

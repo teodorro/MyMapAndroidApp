@@ -9,18 +9,14 @@ class MyPointViewHolder(
     private val onInteractionListener: OnInteractionListener,
 ) : RecyclerView.ViewHolder(binding.root) {
 
-//    val locationView: MaterialTextView = binding.location
-//    val titleView: MaterialTextView = binding.title
-//
-//    override fun toString(): String {
-//        return super.toString() + " '" + titleView.text + "'"
-//    }
-
     fun bind(point: MyPoint){
-        //TODO:
         binding.apply {
-            location.text = point.latitude.toString() + " " + point.longitude.toString()
+            location.text = "location: " + point.latitude.toString() + " " + point.longitude.toString()
             title.text = point.title
+
+            binding.avatar.setOnClickListener{
+                onInteractionListener.onSelect(point)
+            }
         }
     }
 }
