@@ -175,13 +175,6 @@ class MapsFragment : Fragment() {
             editTextTitle.setText(selectedMarker!!.title)
         }
 
-        // print title
-//        binding.editTextTitle.setOnEditorActionListener { v, actionId, event ->
-//            var sm = selectedMarker
-//            var a1 = pointMarkerMap.keys
-//            return@setOnEditorActionListener true
-//        }
-
         binding.editTextTitle.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER) {
 //                var sm = selectedMarker
@@ -225,18 +218,21 @@ class MapsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        val markersInitialized = this::markerManager.isInitialized
 
         lifecycle.coroutineScope.launchWhenCreated {
+            if (!markersInitialized) {
             setMap(mapFragment)
             setupGeoPosition()
 
-            markerManager = MarkerManager(googleMap)
-            markerCollection = markerManager.newCollection("markCollection")
-            // show bottomsheet
-            markerCollection.setOnMarkerClickListener {
-                showBottomSheet(it)
-                selectPoint(it)
-                return@setOnMarkerClickListener true
+                markerManager = MarkerManager(googleMap)
+                markerCollection = markerManager.newCollection("markCollection")
+                // show bottomsheet
+                markerCollection.setOnMarkerClickListener {
+                    showBottomSheet(it)
+                    selectPoint(it)
+                    return@setOnMarkerClickListener true
+                }
             }
 
             if (viewModel.selectedPoint != null)

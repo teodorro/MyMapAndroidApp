@@ -48,7 +48,8 @@ class AllPointsFragment : Fragment() {
             override fun onSelect(point: MyPoint) {
 
                 viewModel.selectedPoint = point
-                activity?.onBackPressed()
+//                activity?.onBackPressed()
+                findNavController().navigateUp()
             }
 
             override fun onDelete(point: MyPoint) {
