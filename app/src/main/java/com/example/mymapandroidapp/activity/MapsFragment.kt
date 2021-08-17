@@ -244,6 +244,7 @@ class MapsFragment : Fragment() {
             else if (pointMarkerMap.any())
                 selectPoint(pointMarkerMap.first().marker)
             else {
+
                 moveCamera(55.751999, 37.617734)
             }
         }
@@ -270,6 +271,9 @@ class MapsFragment : Fragment() {
 
                 // map longClick
                 googleMap.setOnMapLongClickListener {
+                    selectPoint(null)
+                    hideEditText()
+                    hideBottomSheet()
                     selectedPosition = it
                     showEditText()
                 }
@@ -344,12 +348,15 @@ class MapsFragment : Fragment() {
 
     private suspend fun moveCamera(latitude: Double, longitude: Double) {
         val target = LatLng(latitude, longitude)
+
         googleMap.awaitAnimateCamera(
             CameraUpdateFactory.newCameraPosition(
                 cameraPosition {
                     target(target)
                     zoom(15F)
                 }
-            ))
+            ),
+            500
+        )
     }
 }

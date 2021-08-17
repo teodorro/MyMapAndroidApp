@@ -11,4 +11,11 @@
         <item name="android:minWidth">@dimen/icon_button_min_size</item>
         <item name="android:minHeight">@dimen/icon_button_min_size</item>
     </style>
+
+
+    <style name="BottomSheet" parent="@style/Widget.Design.BottomSheet.Modal">
+        <item name="android:typeface">monospace</item>
+        <item name="android:background">@drawable/cornercircle</item>
+    </style>
+
 </resources>

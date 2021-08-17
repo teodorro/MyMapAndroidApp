@@ -23,16 +23,6 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class AllPointsFragment : Fragment() {
 
-//    private var columnCount = 1
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//
-//        arguments?.let {
-//            columnCount = it.getInt(ARG_COLUMN_COUNT)
-//        }
-//    }
-
     private val viewModel: MapsViewModel by viewModels(
         ownerProducer = ::requireParentFragment,
     )
@@ -44,13 +34,10 @@ class AllPointsFragment : Fragment() {
     ): View? {
         val binding = FragmentAllPointsListBinding.inflate(inflater, container, false)
 
-        val adapter = MyPointItemRecyclerViewAdapter(object : OnInteractionListener{
+        val adapter = MyPointItemRecyclerViewAdapter(object : OnInteractionListener {
             override fun onSelect(point: MyPoint) {
-
-
-                    viewModel.selectedPoint = point
-                    findNavController().navigateUp()
-
+                viewModel.selectedPoint = point
+                findNavController().navigateUp()
             }
 
             override fun onDelete(point: MyPoint) {
@@ -65,42 +52,10 @@ class AllPointsFragment : Fragment() {
 
         viewModel.data.observe(viewLifecycleOwner) { state ->
             adapter.submitList(state.points) {
-//                if (newPostsWasPressed) {
-//                    val lm = binding.recyclerView.layoutManager
-//                    lm?.smoothScrollToPosition(binding.recyclerView, RecyclerView.State(), 0)
-//                    newPostsWasPressed = false
-//                }
             }
-//            binding.emptyText.isVisible = state.empty
         }
 
         return binding.root
-
-        // Set the adapter
-//        if (view is RecyclerView) {
-//            with(view) {
-//                layoutManager = when {
-//                    columnCount <= 1 -> LinearLayoutManager(context)
-//                    else -> GridLayoutManager(context, columnCount)
-//                }
-//                adapter = MyPointItemRecyclerViewAdapter(PlaceholderContent.ITEMS)
-//            }
-//        }
-//        return view
     }
 
-//    companion object {
-//
-//        // TODO: Customize parameter argument names
-//        const val ARG_COLUMN_COUNT = "column-count"
-//
-//        // TODO: Customize parameter initialization
-//        @JvmStatic
-//        fun newInstance(columnCount: Int) =
-//            AllPointsFragment().apply {
-//                arguments = Bundle().apply {
-//                    putInt(ARG_COLUMN_COUNT, columnCount)
-//                }
-//            }
-//    }
 }
