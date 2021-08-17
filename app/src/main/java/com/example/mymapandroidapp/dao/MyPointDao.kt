@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MyPointDao {
-    @Query("SELECT * FROM MyPointEntity")
+    @Query("SELECT * FROM MyPointEntity ORDER BY title")
     fun getAll(): Flow<List<MyPointEntity>>
 
     @Query("SELECT * FROM MyPointEntity WHERE id = :id")

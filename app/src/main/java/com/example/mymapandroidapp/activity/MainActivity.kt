@@ -45,9 +45,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId){
+        return when (item.itemId) {
             R.id.allItems -> {
-                    findNavController(R.id.nav_host_fragment).navigate(R.id.action_mapsFragment_to_allPointsFragment)
+                findNavController(R.id.nav_host_fragment).navigate(R.id.action_mapsFragment_to_allPointsFragment)
                 true
             }
             else -> super.onOptionsItemSelected(item)

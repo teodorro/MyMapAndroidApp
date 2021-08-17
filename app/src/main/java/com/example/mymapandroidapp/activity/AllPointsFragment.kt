@@ -42,6 +42,7 @@ class AllPointsFragment : Fragment() {
 
             override fun onDelete(point: MyPoint) {
                 super.onDelete(point)
+                viewModel.deletePoint(point.id)
             }
 
             override fun onEdit(point: MyPoint) {
