@@ -7,10 +7,12 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.example.mymapandroidapp.R
 import com.example.mymapandroidapp.viewModels.MapsViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
@@ -45,7 +47,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId){
             R.id.allItems -> {
-                findNavController(R.id.nav_host_fragment).navigate(R.id.action_mapsFragment_to_allPointsFragment)
+                    findNavController(R.id.nav_host_fragment).navigate(R.id.action_mapsFragment_to_allPointsFragment)
                 true
             }
             else -> super.onOptionsItemSelected(item)

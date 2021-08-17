@@ -103,8 +103,8 @@ class MapsFragment : Fragment() {
 
             if (state != null) {
                 var points = state.points
-//                var points2 = pointMarkerMap.keys
 
+//                var pmm = pointMarkerMap
                 var pointsToAdd = points.filter { x ->
                     !pointMarkerMap.map { y -> y.point.id }.contains(x.id)
                 }
@@ -147,9 +147,12 @@ class MapsFragment : Fragment() {
                     }
                 }
 
+//                val x1 = viewModel.selectedPoint
+//                var pmm2 = pointMarkerMap
+//                val x3 = if (x1 == null) null else pmm2.first { x -> x.point.id == x1!!.id }
                 if ((viewModel.selectedPoint != null && selectedMarker == null)
                     || (viewModel.selectedPoint != null && pointMarkerMap.first { x -> x.marker == selectedMarker}.point != viewModel.selectedPoint))
-                    selectPoint(pointMarkerMap.first { x -> x.point == viewModel.selectedPoint }.marker)
+                    selectPoint(pointMarkerMap.first { x -> x.point.id == viewModel.selectedPoint!!.id }.marker)
                 if (selectedMarker != null)
                     showBottomSheet(selectedMarker!!)
             }
@@ -177,8 +180,9 @@ class MapsFragment : Fragment() {
 
         binding.editTextTitle.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER) {
-//                var sm = selectedMarker
-//                var a1 = pointMarkerMap.keys
+
+                var sm = selectedMarker
+                var a1 = pointMarkerMap
                 var txt = editTextTitle.text.toString()
                 if (txt.isNotBlank()) {
                     if (selectedMarker != null) {

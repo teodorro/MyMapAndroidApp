@@ -6,9 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.findNavController
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.mymapandroidapp.R
 import com.example.mymapandroidapp.adapter.MyPointItemRecyclerViewAdapter
 import com.example.mymapandroidapp.adapter.OnInteractionListener
 import com.example.mymapandroidapp.databinding.FragmentAllPointsListBinding
@@ -19,6 +18,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.ktx.awaitAnimateCamera
 import com.google.maps.android.ktx.model.cameraPosition
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AllPointsFragment : Fragment() {
@@ -47,9 +47,10 @@ class AllPointsFragment : Fragment() {
         val adapter = MyPointItemRecyclerViewAdapter(object : OnInteractionListener{
             override fun onSelect(point: MyPoint) {
 
-                viewModel.selectedPoint = point
-//                activity?.onBackPressed()
-                findNavController().navigateUp()
+
+                    viewModel.selectedPoint = point
+                    findNavController().navigateUp()
+
             }
 
             override fun onDelete(point: MyPoint) {
