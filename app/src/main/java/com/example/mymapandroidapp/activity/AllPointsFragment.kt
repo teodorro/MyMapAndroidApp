@@ -6,19 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.example.mymapandroidapp.adapter.MyPointItemRecyclerViewAdapter
+import com.example.mymapandroidapp.adapter.MyPointViewHolder
 import com.example.mymapandroidapp.adapter.OnInteractionListener
 import com.example.mymapandroidapp.databinding.FragmentAllPointsListBinding
 import com.example.mymapandroidapp.dto.MyPoint
+import com.example.mymapandroidapp.extensions.SwipeToDeleteCallback
 import com.example.mymapandroidapp.viewModels.MapsViewModel
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.ktx.awaitAnimateCamera
-import com.google.maps.android.ktx.model.cameraPosition
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AllPointsFragment : Fragment() {
@@ -50,6 +48,16 @@ class AllPointsFragment : Fragment() {
             }
         })
         binding.allPointsList.adapter = adapter
+
+        val swipeHandler = object : SwipeToDeleteCallback(this.requireContext()) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val pointId = (viewHolder as MyPointViewHolder).pointId
+                if (pointId != -1L)
+                    viewModel.deletePoint(pointId)
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+        itemTouchHelper.attachToRecyclerView(binding.allPointsList)
 
         viewModel.data.observe(viewLifecycleOwner) { state ->
             adapter.submitList(state.points) {

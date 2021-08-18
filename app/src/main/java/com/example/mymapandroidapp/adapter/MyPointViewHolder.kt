@@ -9,10 +9,13 @@ class MyPointViewHolder(
     private val onInteractionListener: OnInteractionListener,
 ) : RecyclerView.ViewHolder(binding.root) {
 
+    var pointId: Long = -1
+
     fun bind(point: MyPoint){
         binding.apply {
             location.text = "location: " + point.latitude.toString() + " " + point.longitude.toString()
             title.text = point.title
+            pointId = point.id
 
             binding.avatar.setOnClickListener{
                 onInteractionListener.onSelect(point)
