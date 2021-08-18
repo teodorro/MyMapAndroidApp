@@ -10,11 +10,11 @@
         android:id="@+id/avatar"
         android:layout_width="@dimen/posts_avatar_size"
         android:layout_height="@dimen/posts_avatar_size"
-        android:padding="8dp"
-        android:contentDescription="location"
-        android:src="@drawable/ic_baseline_location_on_32"
         android:layout_marginTop="@dimen/common_spacing"
         android:background="@color/avatar_backround_tint"
+        android:contentDescription="location"
+        android:padding="8dp"
+        android:src="@drawable/ic_baseline_location_on_32"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,6 +22,8 @@
         android:id="@+id/location"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:paddingLeft="@dimen/common_spacing"
         android:paddingTop="@dimen/common_spacing"
         android:textAppearance="?attr/textAppearanceListItem"
@@ -34,9 +36,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/common_spacing"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:paddingTop="@dimen/common_spacing"
         android:textAppearance="?attr/textAppearanceListItem"
         app:layout_constraintLeft_toRightOf="@+id/avatar"
+        app:layout_constraintRight_toLeftOf="@+id/buttonEdit"
         app:layout_constraintTop_toTopOf="@+id/location" />
 
     <com.google.android.material.button.MaterialButton
