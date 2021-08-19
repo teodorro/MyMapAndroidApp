@@ -2,6 +2,7 @@ package com.example.mymapandroidapp.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.recyclerview.widget.ListAdapter
 import com.example.mymapandroidapp.databinding.FragmentPointItemBinding
 import com.example.mymapandroidapp.dto.MyPoint
@@ -14,7 +15,7 @@ interface OnInteractionListener {
 }
 
 class MyPointItemRecyclerViewAdapter(
-    private val onInteractionListener: OnInteractionListener
+    private val itemClickListener: OnItemClickListener
 ) : ListAdapter<MyPoint, MyPointViewHolder>(MyPointDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyPointViewHolder {
@@ -24,11 +25,17 @@ class MyPointItemRecyclerViewAdapter(
                 parent,
                 false
             )
-        return MyPointViewHolder(binding, onInteractionListener)
+        return MyPointViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: MyPointViewHolder, position: Int) {
         val item = getItem(position)
-        holder.bind(item)
+
+        holder.bind(item, itemClickListener)
     }
+}
+
+
+interface OnItemClickListener{
+    fun onItemClicked(point: MyPoint)
 }

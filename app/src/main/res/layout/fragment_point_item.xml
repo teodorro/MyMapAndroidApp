@@ -11,7 +11,6 @@
         android:layout_width="@dimen/posts_avatar_size"
         android:layout_height="@dimen/posts_avatar_size"
         android:layout_marginTop="@dimen/common_spacing"
-        android:background="@color/avatar_backround_tint"
         android:contentDescription="location"
         android:padding="8dp"
         android:src="@drawable/ic_baseline_location_on_32"
@@ -25,10 +24,11 @@
         android:maxLines="1"
         android:ellipsize="end"
         android:paddingLeft="@dimen/common_spacing"
-        android:paddingTop="@dimen/common_spacing"
+        android:paddingTop="24dp"
         android:textAppearance="?attr/textAppearanceListItem"
         android:textSize="@dimen/text_size_small"
         app:layout_constraintLeft_toRightOf="@+id/avatar"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -38,31 +38,11 @@
         android:layout_margin="@dimen/common_spacing"
         android:maxLines="1"
         android:ellipsize="end"
-        android:paddingTop="@dimen/common_spacing"
+        android:paddingTop="24dp"
         android:textAppearance="?attr/textAppearanceListItem"
         app:layout_constraintLeft_toRightOf="@+id/avatar"
-        app:layout_constraintRight_toLeftOf="@+id/buttonEdit"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@+id/location" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonDelete"
-        style="@style/Widget.AppTheme.IconButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/delete_point"
-        app:icon="@drawable/ic_baseline_delete_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonEdit"
-        style="@style/Widget.AppTheme.IconButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/edit_title"
-        app:icon="@drawable/ic_baseline_edit_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/buttonDelete"
-        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

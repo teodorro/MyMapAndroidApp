@@ -1,17 +1,19 @@
 package com.example.mymapandroidapp.activity
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.AdapterView
+import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mymapandroidapp.R
 import com.example.mymapandroidapp.adapter.MyPointItemRecyclerViewAdapter
 import com.example.mymapandroidapp.adapter.MyPointViewHolder
 import com.example.mymapandroidapp.adapter.OnInteractionListener
+import com.example.mymapandroidapp.adapter.OnItemClickListener
 import com.example.mymapandroidapp.databinding.FragmentAllPointsListBinding
 import com.example.mymapandroidapp.dto.MyPoint
 import com.example.mymapandroidapp.extensions.SwipeToDeleteCallback
@@ -19,11 +21,13 @@ import com.example.mymapandroidapp.viewModels.MapsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AllPointsFragment : Fragment() {
+class AllPointsFragment : Fragment(), OnItemClickListener {
 
     private val viewModel: MapsViewModel by viewModels(
         ownerProducer = ::requireParentFragment,
     )
+
+    private var fragmentBinding: FragmentAllPointsListBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,22 +35,9 @@ class AllPointsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val binding = FragmentAllPointsListBinding.inflate(inflater, container, false)
+        fragmentBinding = binding
 
-        val adapter = MyPointItemRecyclerViewAdapter(object : OnInteractionListener {
-            override fun onSelect(point: MyPoint) {
-                viewModel.selectedPoint = point
-                findNavController().navigateUp()
-            }
-
-            override fun onDelete(point: MyPoint) {
-                super.onDelete(point)
-                viewModel.deletePoint(point.id)
-            }
-
-            override fun onEdit(point: MyPoint) {
-                super.onEdit(point)
-            }
-        })
+        val adapter = MyPointItemRecyclerViewAdapter(this)
         binding.allPointsList.adapter = adapter
 
         val swipeHandler = object : SwipeToDeleteCallback(this.requireContext()) {
@@ -66,5 +57,16 @@ class AllPointsFragment : Fragment() {
 
         return binding.root
     }
+
+    override fun onItemClicked(point: MyPoint) {
+        viewModel.selectedPoint = point
+        findNavController().navigateUp()
+    }
+
+    override fun onDestroyView() {
+        fragmentBinding = null
+        super.onDestroyView()
+    }
+
 
 }

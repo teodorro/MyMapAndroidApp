@@ -4,10 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -18,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.coroutineScope
+import androidx.navigation.findNavController
 import com.example.mymapandroidapp.R
 import com.example.mymapandroidapp.databinding.FragmentMapsBinding
 import com.example.mymapandroidapp.dto.MyPointMarker
@@ -91,6 +89,24 @@ class MapsFragment : Fragment() {
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_main, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.allItems -> {
+                (requireActivity() as MainActivity).navToAllPoints()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -210,9 +226,9 @@ class MapsFragment : Fragment() {
         editTextTitle = binding.editTextTitle
         layoutAddPoint = binding.layoutAddPoint
 
-        return binding.root
+        setHasOptionsMenu(true)
 
-//        return inflater.inflate(R.layout.fragment_maps, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(
@@ -248,6 +264,7 @@ class MapsFragment : Fragment() {
                 moveCamera(55.751999, 37.617734)
             }
         }
+
     }
 
     private fun setupGeoPosition() {

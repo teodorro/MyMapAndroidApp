@@ -37,20 +37,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 return@let
             }
         }
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.allItems -> {
-                findNavController(R.id.nav_host_fragment).navigate(R.id.action_mapsFragment_to_allPointsFragment)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
+        viewModel.data.observe(this) {
+            invalidateOptionsMenu()
         }
+    }
+
+    fun navToAllPoints(){
+        findNavController(R.id.nav_host_fragment).navigate(R.id.action_mapsFragment_to_allPointsFragment)
     }
 }

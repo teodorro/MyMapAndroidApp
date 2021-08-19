@@ -2,6 +2,7 @@ package com.example.mymapandroidapp.extensions
 
 import android.content.Context
 import android.graphics.*
+import android.graphics.Color.parseColor
 import android.graphics.drawable.ColorDrawable
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -14,7 +15,7 @@ abstract class SwipeToDeleteCallback(context: Context) : ItemTouchHelper.SimpleC
     private val intrinsicWidth = deleteIcon?.intrinsicWidth
     private val intrinsicHeight = deleteIcon?.intrinsicHeight
     private val background = ColorDrawable()
-    private val backgroundColor = Color.parseColor("#f44336")
+    private val backgroundColor = Color.parseColor("#20cac0")
     private val clearPaint = Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
 
 
@@ -40,21 +41,24 @@ abstract class SwipeToDeleteCallback(context: Context) : ItemTouchHelper.SimpleC
         val isCanceled = dX == 0f && !isCurrentlyActive
 
         if (isCanceled) {
-            clearCanvas(c, itemView.right + dX, itemView.top.toFloat(), itemView.right.toFloat(), itemView.bottom.toFloat())
+            background.setBounds(itemView.left, itemView.top, itemView.left + dX.toInt(), itemView.bottom)
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             return
         }
 
         // Draw the red delete background
+        if (dX > 30 || dX < -10){
+            var a = dX
+        }
         background.color = backgroundColor
-        background.setBounds(itemView.right + dX.toInt(), itemView.top, itemView.right, itemView.bottom)
+        background.setBounds(itemView.left, itemView.top, itemView.left + dX.toInt(), itemView.bottom)
         background.draw(c)
 
         // Calculate position of delete icon
         val deleteIconTop = itemView.top + (itemHeight - intrinsicHeight!!) / 2
         val deleteIconMargin = (itemHeight - intrinsicHeight) / 2
-        val deleteIconLeft = itemView.right - deleteIconMargin - intrinsicWidth!!
-        val deleteIconRight = itemView.right - deleteIconMargin
+        val deleteIconLeft = itemView.left - deleteIconMargin
+        val deleteIconRight = itemView.left - deleteIconMargin + intrinsicWidth!!
         val deleteIconBottom = deleteIconTop + intrinsicHeight
 
         // Draw the delete icon
