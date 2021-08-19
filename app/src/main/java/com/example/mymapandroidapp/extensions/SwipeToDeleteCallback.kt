@@ -2,7 +2,6 @@ package com.example.mymapandroidapp.extensions
 
 import android.content.Context
 import android.graphics.*
-import android.graphics.Color.parseColor
 import android.graphics.drawable.ColorDrawable
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -15,7 +14,7 @@ abstract class SwipeToDeleteCallback(context: Context) : ItemTouchHelper.SimpleC
     private val intrinsicWidth = deleteIcon?.intrinsicWidth
     private val intrinsicHeight = deleteIcon?.intrinsicHeight
     private val background = ColorDrawable()
-    private val backgroundColor = Color.parseColor("#20cac0")
+    private val backgroundColor = Color.parseColor("#60baf0")
     private val clearPaint = Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
 
 
@@ -57,8 +56,8 @@ abstract class SwipeToDeleteCallback(context: Context) : ItemTouchHelper.SimpleC
         // Calculate position of delete icon
         val deleteIconTop = itemView.top + (itemHeight - intrinsicHeight!!) / 2
         val deleteIconMargin = (itemHeight - intrinsicHeight) / 2
-        val deleteIconLeft = itemView.left - deleteIconMargin
-        val deleteIconRight = itemView.left - deleteIconMargin + intrinsicWidth!!
+        val deleteIconLeft = itemView.left + deleteIconMargin
+        val deleteIconRight = itemView.left + deleteIconMargin + intrinsicWidth!!
         val deleteIconBottom = deleteIconTop + intrinsicHeight
 
         // Draw the delete icon

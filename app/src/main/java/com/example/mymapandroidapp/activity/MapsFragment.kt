@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.coroutineScope
-import androidx.navigation.findNavController
 import com.example.mymapandroidapp.R
 import com.example.mymapandroidapp.databinding.FragmentMapsBinding
 import com.example.mymapandroidapp.dto.MyPointMarker
@@ -250,19 +249,22 @@ class MapsFragment : Fragment() {
                 // show bottomsheet
                 markerCollection.setOnMarkerClickListener {
                     showBottomSheet(it)
+                    hideBottomSheet()
+                    showBottomSheet(it)
                     selectPoint(it)
                     return@setOnMarkerClickListener true
                 }
             }
 
-            if (viewModel.selectedPoint != null)
-                selectPoint(pointMarkerMap.first { x -> x.point == viewModel.selectedPoint }.marker)
-            else if (pointMarkerMap.any())
-                selectPoint(pointMarkerMap.first().marker)
-            else {
-
-                moveCamera(55.751999, 37.617734)
+            if (viewModel.selectedPoint != null) {
+                moveCamera(viewModel.selectedPoint!!.latitude , viewModel.selectedPoint!!.longitude)
             }
+            else if (pointMarkerMap.any()) {
+                var point = pointMarkerMap.first().point
+                moveCamera(point.latitude, point.longitude)
+            }
+            else
+                moveCamera(55.751999, 37.617734)
         }
 
     }
@@ -326,9 +328,10 @@ class MapsFragment : Fragment() {
     }
 
     private fun showBottomSheet(marker: Marker) {
-        BottomSheetBehavior.from(bottomSheet).state =
-            BottomSheetBehavior.STATE_EXPANDED
-        textViewMarker.text = marker.title
+        BottomSheetBehavior.from(bottomSheet).apply {
+            this.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+            textViewMarker.text = marker.title
+        }
     }
 
     private fun hideBottomSheet() {
