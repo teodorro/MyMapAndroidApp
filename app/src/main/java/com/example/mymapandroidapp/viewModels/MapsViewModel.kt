@@ -31,6 +31,8 @@ class MapsViewModel @Inject constructor(
 
     var selectedPoint: MyPoint? = null
 
+    var fromAppPoints: Boolean = false
+
     private var nextId: Long = 1;
 
     init {

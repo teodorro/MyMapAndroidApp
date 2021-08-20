@@ -73,21 +73,6 @@ class MapsFragment : Fragment() {
             }
         }
 
-    private val callback = OnMapReadyCallback { googleMap ->
-        /**
-         * Manipulates the map once available.
-         * This callback is triggered when the map is ready to be used.
-         * This is where we can add markers or lines, add listeners or move the camera.
-         * In this case, we just add a marker near Sydney, Australia.
-         * If Google Play services is not installed on the device, the user will be prompted to
-         * install it inside the SupportMapFragment. This method will only be triggered once the
-         * user has installed Google Play services and returned to the app.
-         */
-        val sydney = LatLng(-34.0, 151.0)
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -118,8 +103,6 @@ class MapsFragment : Fragment() {
 
             if (state != null) {
                 var points = state.points
-
-//                var pmm = pointMarkerMap
                 var pointsToAdd = points.filter { x ->
                     !pointMarkerMap.map { y -> y.point.id }.contains(x.id)
                 }
@@ -146,7 +129,8 @@ class MapsFragment : Fragment() {
                     !points.map { y -> y.id }.contains(x.point.id)
                 }
                 pointsToDelete.forEach { x ->
-                    markerCollection.remove(pointMarkerMap.first { y -> y == x }.marker)
+                    val pmm = pointMarkerMap.first { y -> y == x }
+                    markerCollection.remove(pmm.marker)
                         .also {
                             pointMarkerMap.remove(x)
                         }
@@ -164,12 +148,15 @@ class MapsFragment : Fragment() {
 
 //                val x1 = viewModel.selectedPoint
 //                var pmm2 = pointMarkerMap
+//                val x2 = selectedMarker
 //                val x3 = if (x1 == null) null else pmm2.first { x -> x.point.id == x1!!.id }
                 if ((viewModel.selectedPoint != null && selectedMarker == null)
                     || (viewModel.selectedPoint != null && pointMarkerMap.first { x -> x.marker == selectedMarker}.point != viewModel.selectedPoint))
                     selectPoint(pointMarkerMap.first { x -> x.point.id == viewModel.selectedPoint!!.id }.marker)
-                if (selectedMarker != null)
+                if (selectedMarker != null && !viewModel.fromAppPoints)
                     showBottomSheet(selectedMarker!!)
+                else if (viewModel.fromAppPoints)
+                     viewModel.fromAppPoints = false
             }
         }
 
@@ -180,7 +167,9 @@ class MapsFragment : Fragment() {
 
         // button delete
         binding.buttonDelete.setOnClickListener {
-            var point = pointMarkerMap.first { x -> x.marker == selectedMarker }.point
+            var pm = pointMarkerMap.first { x -> x.marker == selectedMarker }
+            var point = pm.point
+            selectPoint(null)
             viewModel.deletePoint(point.id)
             hideBottomSheet()
         }
@@ -189,15 +178,13 @@ class MapsFragment : Fragment() {
         binding.buttonEdit.setOnClickListener {
             hideBottomSheet()
             showEditText()
-            selectedPosition = selectedMarker!!.position
             editTextTitle.setText(selectedMarker!!.title)
         }
 
         binding.editTextTitle.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER) {
-
-                var sm = selectedMarker
-                var a1 = pointMarkerMap
+//                var sm = selectedMarker
+//                var a1 = pointMarkerMap
                 var txt = editTextTitle.text.toString()
                 if (txt.isNotBlank()) {
                     if (selectedMarker != null) {
@@ -248,10 +235,9 @@ class MapsFragment : Fragment() {
                 markerCollection = markerManager.newCollection("markCollection")
                 // show bottomsheet
                 markerCollection.setOnMarkerClickListener {
-                    showBottomSheet(it)
-                    hideBottomSheet()
-                    showBottomSheet(it)
                     selectPoint(it)
+                    showBottomSheet(it)
+                    AndroidUtils.hideKeyboard(requireView())
                     return@setOnMarkerClickListener true
                 }
             }

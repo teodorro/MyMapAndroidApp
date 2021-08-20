@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.example.mymapandroidapp.R
 import com.example.mymapandroidapp.viewModels.MapsViewModel
 import dagger.hilt.android.AndroidEntryPoint

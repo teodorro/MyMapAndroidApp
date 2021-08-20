@@ -59,14 +59,14 @@ class AllPointsFragment : Fragment(), OnItemClickListener {
     }
 
     override fun onItemClicked(point: MyPoint) {
+        viewModel.fromAppPoints = true
         viewModel.selectedPoint = point
         findNavController().navigateUp()
+
     }
 
     override fun onDestroyView() {
         fragmentBinding = null
         super.onDestroyView()
     }
-
-
 }
