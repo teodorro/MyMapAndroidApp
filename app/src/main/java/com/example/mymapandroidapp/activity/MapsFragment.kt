@@ -233,6 +233,8 @@ class MapsFragment : Fragment() {
                 markerCollection = markerManager.newCollection("markCollection")
                 // show bottomsheet
                 markerCollection.setOnMarkerClickListener {
+                    // непонятно как это работает, но если два раза не вызвать showBottomSheet, то будет работать неправильно
+                    showBottomSheet(it)
                     selectPoint(it)
                     showBottomSheet(it)
                     AndroidUtils.hideKeyboard(requireView())
