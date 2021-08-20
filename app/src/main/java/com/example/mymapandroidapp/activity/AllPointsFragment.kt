@@ -2,17 +2,13 @@ package com.example.mymapandroidapp.activity
 
 import android.os.Bundle
 import android.view.*
-import android.widget.AdapterView
-import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.example.mymapandroidapp.R
 import com.example.mymapandroidapp.adapter.MyPointItemRecyclerViewAdapter
 import com.example.mymapandroidapp.adapter.MyPointViewHolder
-import com.example.mymapandroidapp.adapter.OnInteractionListener
 import com.example.mymapandroidapp.adapter.OnItemClickListener
 import com.example.mymapandroidapp.databinding.FragmentAllPointsListBinding
 import com.example.mymapandroidapp.dto.MyPoint
@@ -55,11 +51,12 @@ class AllPointsFragment : Fragment(), OnItemClickListener {
             }
         }
 
+        viewModel.fromAllPoints = true
+
         return binding.root
     }
 
     override fun onItemClicked(point: MyPoint) {
-        viewModel.fromAppPoints = true
         viewModel.selectedPoint = point
         findNavController().navigateUp()
 

@@ -24,11 +24,9 @@ import com.example.mymapandroidapp.viewModels.MapsViewModel
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.textview.MaterialTextView
 import com.google.maps.android.collections.MarkerManager
@@ -153,10 +151,10 @@ class MapsFragment : Fragment() {
                 if ((viewModel.selectedPoint != null && selectedMarker == null)
                     || (viewModel.selectedPoint != null && pointMarkerMap.first { x -> x.marker == selectedMarker}.point != viewModel.selectedPoint))
                     selectPoint(pointMarkerMap.first { x -> x.point.id == viewModel.selectedPoint!!.id }.marker)
-                if (selectedMarker != null && !viewModel.fromAppPoints)
+                if (selectedMarker != null && !viewModel.fromAllPoints)
                     showBottomSheet(selectedMarker!!)
-                else if (viewModel.fromAppPoints)
-                     viewModel.fromAppPoints = false
+                else if (viewModel.fromAllPoints)
+                     viewModel.fromAllPoints = false
             }
         }
 
@@ -245,11 +243,11 @@ class MapsFragment : Fragment() {
             if (viewModel.selectedPoint != null) {
                 moveCamera(viewModel.selectedPoint!!.latitude , viewModel.selectedPoint!!.longitude)
             }
-            else if (pointMarkerMap.any()) {
+            else if (pointMarkerMap.any() && !viewModel.fromAllPoints) {
                 var point = pointMarkerMap.first().point
                 moveCamera(point.latitude, point.longitude)
             }
-            else
+            else if (!viewModel.fromAllPoints)
                 moveCamera(55.751999, 37.617734)
         }
 
