@@ -43,8 +43,4 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             invalidateOptionsMenu()
         }
     }
-
-    fun navToAllPoints(){
-        findNavController(R.id.nav_host_fragment).navigate(R.id.action_mapsFragment_to_allPointsFragment)
-    }
 }
