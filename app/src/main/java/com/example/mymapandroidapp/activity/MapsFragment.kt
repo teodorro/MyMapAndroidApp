@@ -2,6 +2,7 @@ package com.example.mymapandroidapp.activity
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.*
@@ -83,11 +84,25 @@ class MapsFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.allItems -> {
-                (requireActivity() as MainActivity).navToAllPoints()
+                var items = viewModel.data.value?.points?.map { x -> x.title }?.toTypedArray()
+                val myDialog = MyDialogFragment(items!!) {
+                        dialog, which -> onClickInDialog(dialog, which) }
+                myDialog.show(
+                    (requireActivity() as MainActivity).supportFragmentManager,
+                    "items")
+//                (requireActivity() as MainActivity).navToAllPoints()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    fun onClickInDialog(dialog: DialogInterface?, which: Int) {
+        val points = viewModel.data.value?.points
+        val point = points!![which]
+        val marker = pointMarkerMap.first { x -> x.point.id == point.id }.marker
+        selectPoint(marker)
+        showBottomSheet(marker)
     }
 
     override fun onCreateView(
